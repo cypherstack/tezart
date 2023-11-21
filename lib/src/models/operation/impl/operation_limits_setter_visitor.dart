@@ -35,7 +35,8 @@ class OperationLimitsSetterVisitor implements OperationVisitor {
   }
 
   int _simulationConsumedGas(Operation operation) {
-    return int.parse(_simulationResult(operation)['metadata']['operation_result']['consumed_gas'] as String);
+    final int milliGas = int.parse(_simulationResult(operation)['metadata']['operation_result']['consumed_milligas'] as String);
+    return (milliGas / 1000).ceil();
   }
 
   Future<int> _originationDefaultSize(Operation operation) async {
