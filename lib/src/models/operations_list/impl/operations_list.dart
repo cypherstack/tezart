@@ -187,9 +187,6 @@ class OperationsList {
     await Future.wait(operations.map((operation) async {
       await operation.setLimits(OperationLimitsSetterVisitor());
     }));
-
-    // resimulate to check that limit computation is valid. Remove this in a stable version ??
-    await simulate();
   }
 
   /// It sets the optimal fees of [operations]
