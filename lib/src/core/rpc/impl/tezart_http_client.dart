@@ -1,8 +1,9 @@
 import 'dart:io';
 
+import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart' as http_client;
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:logging/logging.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retry/retry.dart';
 
 import 'tezart_http_error.dart';
@@ -12,41 +13,37 @@ class TezartHttpClient {
   late http_client.Dio client;
   final String url;
 
-  // Add client as optional parameter for testing and optional proxy.
-  TezartHttpClient(this.url, {dio.Dio? client, String? proxy}) {
-    var options = dio.BaseOptions(baseUrl: url, contentType: 'application/json');
-    this.client = client ?? dio.Dio(options);
-
-    if (proxy != null) {
-      // Configure proxy.
-      (this.client.httpClientAdapter as dio.DefaultHttpClientAdapter).onHttpClientCreate = (httpClient) {
-        httpClient.findProxy = (uri) {
-          return "PROXY $proxy";
-        };
-        httpClient.badCertificateCallback = (cert, host, port) => true;
-        return httpClient;
-      };
-    }
-
+  // Add client as optional parameter for testing
+  TezartHttpClient(this.url, {http_client.Dio? client, String? proxy}) {
     // ensure that the url ends with '/' (double / is ok)
     final baseUrl = '$url/';
 
     if (client != null) {
       this.client = client;
       this.client.options.baseUrl = baseUrl;
-      return;
-    }
+    } else {
+      var options = http_client.BaseOptions(
+          baseUrl: baseUrl, contentType: 'application/json');
 
-    final options = http_client.BaseOptions(baseUrl: baseUrl, contentType: 'application/json');
-    this.client = http_client.Dio(options);
-    this.client.interceptors.add(PrettyDioLogger(
-          logPrint: log.finest,
-          requestHeader: true,
-          requestBody: true,
-          responseBody: true,
-          responseHeader: false,
-          compact: false,
-        ));
+      this.client = http_client.Dio(options);
+      this.client.interceptors.add(PrettyDioLogger(
+            logPrint: log.finest,
+            requestHeader: true,
+            requestBody: true,
+            responseBody: true,
+            responseHeader: false,
+            compact: false,
+          ));
+
+      if (proxy != null) {
+        this.client.httpClientAdapter = DefaultHttpClientAdapter()
+          ..onHttpClientCreate = (HttpClient httpClient) {
+            httpClient.findProxy = (_) => 'PROXY $proxy';
+            // Ignore SSL errors if required for development with self-signed certificates
+            httpClient.badCertificateCallback = (cert, host, port) => true;
+          };
+      }
+    }
   }
 
   Future<http_client.Response> post(String path, {dynamic data}) {
@@ -58,7 +55,8 @@ class TezartHttpClient {
     );
   }
 
-  Future<http_client.Response> get(String path, {Map<String, dynamic>? params}) {
+  Future<http_client.Response> get(String path,
+      {Map<String, dynamic>? params}) {
     log.info('request to get from path: $path');
 
     return _retryOnSocketException(
