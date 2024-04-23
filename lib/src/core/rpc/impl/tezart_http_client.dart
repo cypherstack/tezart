@@ -12,8 +12,22 @@ class TezartHttpClient {
   late http_client.Dio client;
   final String url;
 
-  // Add client as optional parameter for testing
-  TezartHttpClient(this.url, {http_client.Dio? client}) {
+  // Add client as optional parameter for testing and optional proxy.
+  TezartHttpClient(this.url, {dio.Dio? client, String? proxy}) {
+    var options = dio.BaseOptions(baseUrl: url, contentType: 'application/json');
+    this.client = client ?? dio.Dio(options);
+
+    if (proxy != null) {
+      // Configure proxy.
+      (this.client.httpClientAdapter as dio.DefaultHttpClientAdapter).onHttpClientCreate = (httpClient) {
+        httpClient.findProxy = (uri) {
+          return "PROXY $proxy";
+        };
+        httpClient.badCertificateCallback = (cert, host, port) => true;
+        return httpClient;
+      };
+    }
+
     // ensure that the url ends with '/' (double / is ok)
     final baseUrl = '$url/';
 
