@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart' as http_client;
-import 'package:logging/logging.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:logging/logging.dart';
 import 'package:retry/retry.dart';
 
 import 'tezart_http_error.dart';
@@ -55,8 +55,7 @@ class TezartHttpClient {
     );
   }
 
-  Future<http_client.Response> get(String path,
-      {Map<String, dynamic>? params}) {
+  Future<http_client.Response> get(String path, {Map<String, dynamic>? params}) {
     log.info('request to get from path: $path');
 
     return _retryOnSocketException(
