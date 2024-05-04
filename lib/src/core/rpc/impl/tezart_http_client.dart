@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart' as http_client;
+import 'package:dio/io.dart';
 import 'package:logging/logging.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:retry/retry.dart';
@@ -36,7 +36,7 @@ class TezartHttpClient {
           ));
 
       if (proxy != null) {
-        this.client.httpClientAdapter = DefaultHttpClientAdapter()
+        this.client.httpClientAdapter = IOHttpClientAdapter()
           ..onHttpClientCreate = (HttpClient httpClient) {
             httpClient.findProxy = (_) => 'PROXY $proxy';
             // Ignore SSL errors if required for development with self-signed certificates

@@ -22,10 +22,9 @@ class TezartHttpError extends CommonException {
     TezartHttpErrorTypes.unhandled: 'Network Error',
   };
   final errorTypesMapping = {
-    http_client.DioErrorType.connectTimeout: TezartHttpErrorTypes.connectTimeout,
-    http_client.DioErrorType.receiveTimeout: TezartHttpErrorTypes.receiveTimeout,
-    http_client.DioErrorType.response: TezartHttpErrorTypes.response,
-    http_client.DioErrorType.cancel: TezartHttpErrorTypes.cancel,
+    http_client.DioExceptionType.connectionTimeout: TezartHttpErrorTypes.connectTimeout,
+    http_client.DioExceptionType.receiveTimeout: TezartHttpErrorTypes.receiveTimeout,
+    http_client.DioExceptionType.cancel: TezartHttpErrorTypes.cancel,
   };
 
   TezartHttpError(this.clientError);
