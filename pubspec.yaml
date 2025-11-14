@@ -10,12 +10,15 @@ environment:
 
 dependencies:
   bs58check: ^1.0.2 # implementation of base58check
-  bip39: ^1.0.6 # Mnemonic code for generating deterministic keys
-  pointycastle: ^3.0.1 # a library that implements popular crypto algorithms
+  bip39: # Mnemonic code for generating deterministic keys
+    git:
+      url: https://github.com/cypherstack/stack-bip39.git
+      ref: 20bc8ca0bf0a30c6965977a26c41475a9e862020
+  pointycastle: ^4.0.0 # a library that implements popular crypto algorithms
   convert: ^3.0.0 # Encoders and decoders for converting between different data representations
   dio: ^5.1.1 # http client
   equatable: ^2.0.0
-  pinenacl: ^0.3.3 # Dart implementation of TweetNacl
+  pinenacl: ^0.6.0 # Dart implementation of TweetNacl
   json_serializable: ^6.1.4 # code generation for toJson and fromJson methods
   json_annotation: ^4.4.0 # Classes and helper functions that support JSON code generation via the `json_serializable` package.
   retry: ^3.1.0 # retry a function if an error happens
